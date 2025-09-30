@@ -1,7 +1,7 @@
 import numpy as np
 import random
 
-ACTIONS = ["up", "down", "left", "right"]
+ACTIONS = ["up", "down", "left", "right", "up-left", "up-right", "down-left", "down-right"]
 
 class QLearningAgent:
     def __init__(self, size=3):
@@ -47,6 +47,18 @@ class QLearningAgent:
         elif action == "left":
             y = max(0, y - 1)
         elif action == "right":
+            y = min(self.grid_size - 1, y + 1)
+        elif action == "up-left":
+            x = max(0, x - 1)
+            y = max(0, y - 1)
+        elif action == "up-right":
+            x = max(0, x - 1)
+            y = min(self.grid_size - 1, y + 1)
+        elif action == "down-left":
+            x = min(self.grid_size - 1, x + 1)
+            y = max(0, y - 1)
+        elif action == "down-right":
+            x = min(self.grid_size - 1, x + 1)
             y = min(self.grid_size - 1, y + 1)
 
         new_state = (x, y)

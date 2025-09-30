@@ -6,7 +6,7 @@ GRID_SIZE = 3
 START = (0, 0)
 GOAL = (2, 2)
 
-ACTIONS = ["up", "down", "left", "right"]
+ACTIONS = ["up", "down", "left", "right", "up-left", "up-right", "down-left", "down-right"]
 
 def step(state, action):
     x, y = state
@@ -17,6 +17,18 @@ def step(state, action):
     elif action == "left":
         y = max(0, y - 1)
     elif action == "right":
+        y = min(GRID_SIZE - 1, y + 1)
+    elif action == "up-left":
+        x = max(0, x - 1)
+        y = max(0, y - 1)
+    elif action == "up-right":
+        x = max(0, x - 1)
+        y = min(GRID_SIZE - 1, y + 1)
+    elif action == "down-left":
+        x = min(GRID_SIZE - 1, x + 1)
+        y = max(0, y - 1)
+    elif action == "down-right":
+        x = min(GRID_SIZE - 1, x + 1)
         y = min(GRID_SIZE - 1, y + 1)
 
     new_state = (x, y)
@@ -46,7 +58,7 @@ def update_Q(state, action, reward, next_state, alpha=0.1, gamma=0.9):
     Q[(state, action)] = new_q
 
 # ----- Training -----
-episodes = 200
+episodes = 300
 for episode in range(episodes):
     state = START
     done = False
