@@ -10,7 +10,12 @@
     <h1>Q-Learning Agent</h1>
     <div class="controls">
         <label for="grid-size">Grid Size:</label>
-        <input type="number" id="grid-size" value="3" min="2" max="10">
+        <input type="number" id="grid-size" value="5" min="2" max="10">
+        <label for="env-type">Environment:</label>
+        <select id="env-type">
+            <option value="static">Static</option>
+            <option value="dynamic">Dynamic</option>
+        </select>
         <button id="resize-btn">Resize Grid</button>
     </div>
     <div id="grid-container"></div>

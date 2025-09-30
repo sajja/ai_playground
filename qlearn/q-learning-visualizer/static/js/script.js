@@ -6,10 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const runBtn = document.getElementById('run-btn');
     const gridSizeInput = document.getElementById('grid-size');
     const resizeBtn = document.getElementById('resize-btn');
+    const envTypeSelect = document.getElementById('env-type');
     
-    let gridSize = 3;
+    let gridSize = 5;
     let start = [0, 0];
-    let goal = [2, 2];
+    let goal = [4, 4];
 
     function createGrid(size) {
         gridContainer.innerHTML = '';
@@ -41,15 +42,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resizeBtn.addEventListener('click', () => {
         const newSize = parseInt(gridSizeInput.value);
+        const envType = envTypeSelect.value;
         createGrid(newSize);
         fetch('/resize', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ size: newSize }),
+            body: JSON.stringify({ size: newSize, env_type: envType }),
         }).then(() => {
-            alert(`Grid resized to ${newSize}x${newSize}. Agent reset.`);
+            alert(`Grid resized to ${newSize}x${newSize} with ${envType} environment. Agent reset.`);
         });
     });
 

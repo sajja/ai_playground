@@ -1,10 +1,8 @@
-import os
 from flask import Flask, render_template, jsonify, request
-
-from q_learning.agent import QLearningAgent
+from q_learning.agent import QLearningAgent, DynamicQLearningAgent
 
 app = Flask(__name__)
-agent = QLearningAgent(size=3)
+agent = QLearningAgent(size=5)
 
 @app.route('/')
 def index():
@@ -15,33 +13,32 @@ def train():
     agent.train()
     return jsonify(success=True)
 
+@app.route('/get_path', methods=['GET'])
+def get_path():
+    path, done, final_state = agent.test_policy()
+    return jsonify({
+        "path": path,
+        "done": done,
+        "final_state": final_state
+    })
+
 @app.route('/resize', methods=['POST'])
 def resize():
     global agent
-    size = request.json.get('size', 3)
-    agent = QLearningAgent(size=size)
+    size = request.json.get('size', 5)
+    env_type = request.json.get('env_type', 'static')
+    if env_type == 'dynamic':
+        agent = DynamicQLearningAgent(size=size)
+    else:
+        agent = QLearningAgent(size=size)
     return jsonify(success=True)
 
 @app.route('/get_q_table', methods=['GET'])
 def get_q_table():
-    # Convert tuple keys to strings for JSON serialization
+    # The Q-table keys are tuples, which are not directly JSON serializable.
+    # Convert them to strings.
     q_table_serializable = {str(k): v for k, v in agent.Q.items()}
     return jsonify(q_table_serializable)
-
-@app.route('/get_path', methods=['GET'])
-def get_path():
-    path = []
-    state = agent.START
-    done = False
-    steps = 0
-    while not done and steps < agent.grid_size * agent.grid_size * 2:
-        action = agent.choose_action(state, epsilon=0)  # Greedy action
-        path.append({'state': state, 'action': action})
-        state, _, done = agent.step(state, action)
-        steps += 1
-    if done:
-        path.append({'state': state, 'action': 'done'})
-    return jsonify(path=path)
 
 if __name__ == '__main__':
     app.run(debug=True)

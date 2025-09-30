@@ -66,12 +66,41 @@ class QLearningAgent:
         done = (new_state == self.GOAL)
         return new_state, reward, done
 
-    def test_policy(self, steps=10):
+    def test_policy(self):
+        path = []
         state = self.START
         done = False
-        path = []
-        while not done and len(path) < steps:
-            action = self.choose_action(state, epsilon=0)  # greedy (no exploration)
-            path.append((state, action))
-            state, reward, done = self.step(state, action)
+        steps = 0
+        while not done and steps < self.grid_size * self.grid_size * 2:
+            action = self.choose_action(state, epsilon=0)  # Greedy action
+            path.append({'state': state, 'action': action})
+            state, _, done = self.step(state, action)
+            steps += 1
+        if done:
+            path.append({'state': state, 'action': 'done'})
         return path, done, state
+
+class DynamicQLearningAgent(QLearningAgent):
+    def __init__(self, size=5):
+        super().__init__(size)
+        self.obstacle = None
+        self.place_obstacle()
+
+    def place_obstacle(self):
+        while True:
+            self.obstacle = (random.randint(0, self.grid_size - 1), random.randint(0, self.grid_size - 1))
+            if self.obstacle != self.START and self.obstacle != self.GOAL:
+                break
+
+    def step(self, state, action):
+        new_state, reward, done = super().step(state, action)
+
+        if new_state == self.obstacle:
+            reward = -1  # Penalty for hitting an obstacle
+            # Go back to the previous state
+            return state, reward, False 
+
+        if done:
+            self.place_obstacle() # Move obstacle for next episode
+
+        return new_state, reward, done
