@@ -1,15 +1,13 @@
-# filepath: /q-learning-visualizer/q-learning-visualizer/q_learning/agent.py
 import numpy as np
 import random
-
-GRID_SIZE = 3
-START = (0, 0)
-GOAL = (2, 2)
 
 ACTIONS = ["up", "down", "left", "right"]
 
 class QLearningAgent:
-    def __init__(self):
+    def __init__(self, size=3):
+        self.grid_size = size
+        self.START = (0, 0)
+        self.GOAL = (size - 1, size - 1)
         self.Q = {}  # Q-table as dictionary
 
     def get_Q(self, state, action):
@@ -32,7 +30,7 @@ class QLearningAgent:
 
     def train(self, episodes=200):
         for episode in range(episodes):
-            state = START
+            state = self.START
             done = False
             while not done:
                 action = self.choose_action(state)
@@ -45,19 +43,19 @@ class QLearningAgent:
         if action == "up":
             x = max(0, x - 1)
         elif action == "down":
-            x = min(GRID_SIZE - 1, x + 1)
+            x = min(self.grid_size - 1, x + 1)
         elif action == "left":
             y = max(0, y - 1)
         elif action == "right":
-            y = min(GRID_SIZE - 1, y + 1)
+            y = min(self.grid_size - 1, y + 1)
 
         new_state = (x, y)
-        reward = 1 if new_state == GOAL else 0
-        done = (new_state == GOAL)
+        reward = 1 if new_state == self.GOAL else 0
+        done = (new_state == self.GOAL)
         return new_state, reward, done
 
     def test_policy(self, steps=10):
-        state = START
+        state = self.START
         done = False
         path = []
         while not done and len(path) < steps:

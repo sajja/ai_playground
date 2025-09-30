@@ -14,6 +14,10 @@ h1 {
     color: #333;
 }
 
+.controls {
+    margin-bottom: 20px;
+}
+
 .container {
     max-width: 800px;
     margin: auto;

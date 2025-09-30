@@ -1,10 +1,10 @@
 import os
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 
-from q_learning.agent import QLearningAgent, START, GOAL
+from q_learning.agent import QLearningAgent
 
 app = Flask(__name__)
-agent = QLearningAgent()
+agent = QLearningAgent(size=3)
 
 @app.route('/')
 def index():
@@ -13,6 +13,13 @@ def index():
 @app.route('/train', methods=['POST'])
 def train():
     agent.train()
+    return jsonify(success=True)
+
+@app.route('/resize', methods=['POST'])
+def resize():
+    global agent
+    size = request.json.get('size', 3)
+    agent = QLearningAgent(size=size)
     return jsonify(success=True)
 
 @app.route('/get_q_table', methods=['GET'])
@@ -24,10 +31,10 @@ def get_q_table():
 @app.route('/get_path', methods=['GET'])
 def get_path():
     path = []
-    state = START
+    state = agent.START
     done = False
     steps = 0
-    while not done and steps < 20:
+    while not done and steps < agent.grid_size * agent.grid_size * 2:
         action = agent.choose_action(state, epsilon=0)  # Greedy action
         path.append({'state': state, 'action': action})
         state, _, done = agent.step(state, action)
